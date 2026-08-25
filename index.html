@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semilla del Futuro - Gold v1.0</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --earth-orange: #ea580c;
+            --earth-terracotta: #c2410c;
+            --earth-sand: #d97706;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-yellow: #eab308;
+            --text-light: #f8fafc;
+        }
+
+        body.high-contrast {
+            --bg-dark: #000000;
+            --card-bg: #111111;
+            --text-light: #ffffff;
+            --earth-orange: #ffaa00;
+            --accent-cyan: #00ffff;
+        }
+
+        body.dyslexia-font {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif !important;
+            letter-spacing: 0.05em;
+            word-spacing: 0.1em;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* MASTER TOP BAR */
+        .master-bar {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid var(--accent-cyan);
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--earth-orange);
+            box-shadow: 0 0 10px rgba(234, 88, 12, 0.5);
+        }
+
+        /* SECCIONES Y MODULOS */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .nav-btn-earth {
+            background: linear-gradient(135deg, var(--earth-orange), var(--earth-terracotta));
+            color: white;
+            border: 1px solid var(--earth-sand);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn-earth:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.15);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .progress-badge {
+            background: #0284c7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: #334155;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .theme-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            animation: burstParticle 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) FORWARDS;
+        }
+
+        @keyframes burstParticle {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.3) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(var(--scale)) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA MAESTRA Y NAVEGACIÓN PRINCIPAL -->
+    <div class="master-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <h2 style="margin:0; color:var(--earth-orange);">🌱 Semilla Gold v1.0</h2>
+            <span id="netStatus" style="font-size:0.75rem; background:rgba(16,185,129,0.2); color:var(--accent-green); padding:3px 8px; border-radius:10px; border:1px solid var(--accent-green);">🌐 Modo Offline Listo</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="tab-btn active" onclick="switchView('studentView', this)">🎮 Estudiante</button>
+            <button class="tab-btn" onclick="switchView('teacherView', this)">📊 Docente / Tutor</button>
+            <button class="tab-btn" onclick="switchView('settingsView', this)">⚙️ Ajustes</button>
+        </div>
+    </div>
+
+    <!-- VISTA ESTUDIANTE -->
+    <div id="studentView" class="view-section active">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="progress-badge">
+                <span id="starCounter">⭐ 0 Estrellas</span> | 
+                <span id="pointCounter">🪙 0 Pts</span>
+            </div>
+            <div>
+                <button class="nav-btn-earth" onclick="startActiveGame('Matemáticas')">🧮 Matemáticas</button>
+                <button class="nav-btn-earth" onclick="startActiveGame('Ciencias')" style="background:linear-gradient(135deg, var(--accent-green), #047857);">🌿 Ciencias</button>
+            </div>
+        </div>
+
+        <!-- HUD DE JUEGO -->
+        <div id="hudZone" class="card" style="display:none; border-color:var(--earth-orange);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="hudSubjectTitle" style="margin:0; color:var(--earth-orange);">Materia</h3>
+                <span id="activeAvatarIcon" style="font-size:1.5rem;">🤖</span>
+            </div>
+            <div style="background:#0f172a; padding:15px; border-radius:8px; margin-top:15px; border-left:4px solid var(--accent-cyan);">
+                <h4 id="hudQuestionText" style="margin:0;">¿Cargando pregunta?</h4>
+                <div class="options-grid" id="hudOptionsGrid"></div>
+            </div>
+        </div>
+
+        <!-- MISIONES -->
+        <div class="card">
+            <h3>📜 Misiones Diarias</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 15px; border-radius:8px;">
+                <span>Completar 1 desafío cualitativo</span>
+                <button class="nav-btn-earth" style="padding:4px 10px; font-size:0.8rem;" onclick="claimMission(100, 1)">Reclamar (+100 Pts)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA DOCENTE / TUTOR -->
+    <div id="teacherView" class="view-section">
+        <div class="card">
+            <h2>📊 Panel de Diagnóstico Cualitativo</h2>
+            <p>Resumen global de progreso y exportación de evidencias pedagógicas.</p>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:15px;">
+                <div style="background:#0f172a; padding:15px; border-radius:8px; text-align:center;">
+                    <strong style="color:var(--accent-cyan);">Nivel de Razonamiento</strong>
+                    <h3 style="margin:10px 0 0 0;">Avanzado (85%)</h3>
+                </div>
+                <div style="background:#0f172a; padding:15px; border-radius:8px; text-align:center;">
+                    <strong style="color:var(--accent-green);">Perseverancia</strong>
+                    <h3 style="margin:10px 0 0 0;">Alta (92%)</h3>
+                </div>
+            </div>
+            <div style="margin-top:20px; display:flex; gap:10px;">
+                <button class="nav-btn-earth" onclick="exportData()">📥 Exportar Expediente (.JSON)</button>
+                <button class="nav-btn-earth" style="background:#0284c7;" onclick="window.print()">🖨️ Imprimir Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA AJUSTES -->
+    <div id="settingsView" class="view-section">
+        <div class="card">
+            <h2>⚙️ Accesibilidad y Sensorial</h2>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                <button class="nav-btn-earth" onclick="toggleHighContrast()">👁️ Alternar Alto Contraste</button>
+                <button class="nav-btn-earth" onclick="toggleDyslexiaFont()">🔤 Alternar Fuente Lectura Fácil</button>
+                <button class="nav-btn-earth" id="sfxBtn" onclick="toggleSFX()">🔊 SFX: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ESTADO GLOBAL
+        let stars = parseInt(localStorage.getItem('sdf_stars')) || 0;
+        let points = parseInt(localStorage.getItem('sdf_points')) || 0;
+        let sfxEnabled = true;
+
+        function updateProgress() {
+            document.getElementById('starCounter').innerText = `⭐ ${stars} Estrellas`;
+            document.getElementById('pointCounter').innerText = `🪙 ${points} Pts`;
+            localStorage.setItem('sdf_stars', stars);
+            localStorage.setItem('sdf_points', points);
+        }
+        updateProgress();
+
+        // NAVEGACIÓN ENTRE VISTAS
+        function switchView(viewId, btn) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            btn.classList.add('active');
+            playTone(400, 0.05, 'triangle');
+        }
+
+        // MOTOR DE SONIDO NATIVO
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, duration, type = 'sine') {
+            if (!sfxEnabled) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            document.getElementById('sfxBtn').innerText = sfxEnabled ? "🔊 SFX: ON" : "🔇 SFX: OFF";
+        }
+
+        // ACCESIBILIDAD
+        function toggleHighContrast() { document.body.classList.toggle('high-contrast'); }
+        function toggleDyslexiaFont() { document.body.classList.toggle('dyslexia-font'); }
+
+        // BUCLE DE JUEGO MULTIDISCIPLINAR
+        function startActiveGame(subject) {
+            const hud = document.getElementById('hudZone');
+            hud.style.display = 'block';
+            document.getElementById('hudSubjectTitle').innerText = subject;
+            
+            const grid = document.getElementById('hudOptionsGrid');
+            grid.innerHTML = "";
+
+            if (subject === 'Matemáticas') {
+                document.getElementById('hudQuestionText').innerText = "¿Cuál es el resultado de 12 × 12?";
+                ["124", "144", "148", "134"].forEach(opt => {
+                    const b = document.createElement('button');
+                    b.className = 'option-btn';
+                    b.innerText = opt;
+                    b.onclick = () => checkAns(opt === "144");
+                    grid.appendChild(b);
+                });
+            } else {
+                document.getElementById('hudQuestionText').innerText = "¿Qué proceso realizan las plantas para producir su alimento?";
+                ["Respiración", "Fotosíntesis", "Absorción", "Combustión"].forEach(opt => {
+                    const b = document.createElement('button');
+                    b.className = 'option-btn';
+                    b.innerText = opt;
+                    b.onclick = () => checkAns(opt === "Fotosíntesis");
+                    grid.appendChild(b);
+                });
+            }
+        }
+
+        function checkAns(isCorrect) {
+            if (isCorrect) {
+                playTone(600, 0.2, 'sine');
+                points += 50;
+                stars += 1;
+                updateProgress();
+                alert("¡Excelente trabajo! +50 Pts");
+            } else {
+                playTone(150, 0.2, 'sawtooth');
+                alert("Respuesta incorrecta. Sigue practicando.");
+            }
+        }
+
+        function claimMission(p, s) {
+            points += p;
+            stars += s;
+            updateProgress();
+            playTone(800, 0.3, 'sine');
+            alert("¡Recompensa de misión reclamada!");
+        }
+
+        function exportData() {
+            const exp = { fecha: new Date(), puntos: points, estrellas: stars, version: "Gold 1.0" };
+            const blob = new Blob([JSON.stringify(exp, null, 2)], {type: 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Semilla_Gold_Expediente.json`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
